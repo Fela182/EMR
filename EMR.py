@@ -45,8 +45,8 @@ class tarjeta():
 		print (self.ucolectivo)
 		print ("de time")
 		print (self.uhorario)
-class comun(tarjeta):
-	def pagarboleto(self,colectivo):
+
+	def pagar(self,colectivo):
 		from datetime import datetime
 		fecha_inicial = self.uhorario
 		fecha_final = datetime.now()
@@ -88,6 +88,9 @@ class comun(tarjeta):
 					self.aux = viaje(colectivo,fecha_final,5.75)
 					self.list_viajes.append(self.aux)
 					return True
+class comun(tarjeta):
+	def pagarboleto(self,colectivo):
+		self.pagar(colectivo)
 class medio(tarjeta):
 	def pagarboleto(self,colectivo):
 		from datetime import datetime
@@ -95,19 +98,9 @@ class medio(tarjeta):
 		fecha_final = datetime.now()
 		diferencia = fecha_final - fecha_inicial
 		segundos_transcurridos = diferencia.total_seconds()
-		if(colectivo.linea != self.ucolectivo and segundos_transcurridos < 3600):
-			if(self.saldo < 0.96):
-				return False
-			else:
-				self.saldo=self.saldo-0.96
-				self.uhorario=fecha_final
-				self.ucolectivo=colectivo.linea
-				#self.viajenuevo()
-				self.aux = viaje(colectivo,fecha_final,0.96)
-				self.list_viajes.append(self.aux)
-				return True
-		else:
-			if(self.ulinea!=colectivo.linea and segundos_transcurridos < 3600):
+		datetime.strptime("25/01/2015 15:05", "%d/%m/%Y %H:%M")
+		if(fecha_final.hour > 6):
+			if(colectivo.linea != self.ucolectivo and segundos_transcurridos < 3600):
 				if(self.saldo < 0.96):
 					return False
 				else:
@@ -119,17 +112,30 @@ class medio(tarjeta):
 					self.list_viajes.append(self.aux)
 					return True
 			else:
-				if(self.saldo < 2.90):
-					return False
+				if(self.ulinea!=colectivo.linea and segundos_transcurridos < 3600):
+					if(self.saldo < 0.96):
+						return False
+					else:
+						self.saldo=self.saldo-0.96
+						self.uhorario=fecha_final
+						self.ucolectivo=colectivo.linea
+						#self.viajenuevo()
+						self.aux = viaje(colectivo,fecha_final,0.96)
+						self.list_viajes.append(self.aux)
+						return True
 				else:
-					self.saldo=self.saldo-2.90
-					self.uhorario=fecha_final
-					self.ucolectivo=colectivo.linea
-					#self.viajenuevo()
-					self.aux = viaje(colectivo,fecha_final,2.9)
-					self.list_viajes.append(self.aux)
-					return True
-
+					if(self.saldo < 2.90):
+						return False
+					else:
+						self.saldo=self.saldo-2.90
+						self.uhorario=fecha_final
+						self.ucolectivo=colectivo.linea
+						#self.viajenuevo()
+						self.aux = viaje(colectivo,fecha_final,2.9)
+						self.list_viajes.append(self.aux)
+						return True
+		else: self.pagar(colectivo)
+	
 k=colectivo("semtur","k",1)
 centro=colectivo("Rosario Bus",144,1)
 centros=colectivo("Rosario Bus",144,2)
