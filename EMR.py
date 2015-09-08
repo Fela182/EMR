@@ -15,11 +15,11 @@ class viaje():
 		self.monto=monto
 		self.saldo=saldo
 class tarjeta():
-	def __init__(self,saldo,ucolectivo,linea,uhorario,cant):
+	def __init__(self,saldo,ucolectivo,interno,uhorario,cant):
 		self.saldo=saldo
 		self.ucolectivo=ucolectivo
 		self.uhorario=uhorario
-		self.ulinea=linea
+		self.uinterno=interno
 		self.cant=cant
 		self.list_viajes = []
 		#self.aux = viaje (0,0,0)
@@ -47,33 +47,34 @@ class tarjeta():
 		print ("de time")
 		print (self.uhorario)
 
-	def pagar(self,colectivo):
+	def pagar(self,colectivo,horario):
 		from datetime import datetime
 		fecha_inicial = self.uhorario
-		fecha_final = datetime.now()
+		fecha_final = horario
 		diferencia = fecha_final - fecha_inicial
 		segundos_transcurridos = diferencia.total_seconds()
 		if(colectivo.linea != self.ucolectivo and segundos_transcurridos < 3600): #transbordo otro colectivo
 			if(self.saldo < 1.90):
 				return False
 			else:
-				
-				self.saldo=self.saldo-1.90
+				self.saldo=round(self.saldo-1.90,2)
 				self.uhorario=fecha_final
 				self.ucolectivo=colectivo.linea
+				self.uinterno=colectivo.interno
 				#self.viajenuevo()
 				self.aux = viaje(colectivo,fecha_final,1.9,self.saldo)
 				self.list_viajes.append(self.aux)
 				return True
 		else:
-			if(self.ulinea!=colectivo.linea and segundos_transcurridos < 3600): #transbordo mismo colectivo diferente linea
+			if(self.uinterno!=colectivo.interno and segundos_transcurridos < 3600): #transbordo mismo colectivo diferente linea
 				if(self.saldo < 1.90):
 					return False
 				else:
 				
-					self.saldo=self.saldo-1.90
+					self.saldo=round(self.saldo-1.90,2)
 					self.uhorario=fecha_final
 					self.ucolectivo=colectivo.linea
+					self.uinterno=colectivo.interno
 					#self.viajenuevo()
 					self.aux = viaje(colectivo,fecha_final,1.9,self.saldo)
 					self.list_viajes.append(self.aux)
@@ -82,21 +83,22 @@ class tarjeta():
 				if(self.saldo < 5.75):
 					return False
 				else:
-					self.saldo=self.saldo-5.75
+					self.saldo=round(self.saldo-5.75,2)
 					self.uhorario=fecha_final
 					self.ucolectivo=colectivo.linea
+					self.uinterno=colectivo.interno
 					#self.viajenuevo()
 					self.aux = viaje(colectivo,fecha_final,5.75,self.saldo)
 					self.list_viajes.append(self.aux)
 					return True
 class comun(tarjeta):
-	def pagarboleto(self,colectivo):
-		self.pagar(colectivo)
+	def pagarboleto(self,colectivo,horario):
+		return self.pagar(colectivo,horario)
 class medio(tarjeta):
-	def pagarboleto(self,colectivo):
+	def pagarboleto(self,colectivo,horario):
 		from datetime import datetime
 		fecha_inicial = self.uhorario
-		fecha_final = datetime.now()
+		fecha_final = horario
 		diferencia = fecha_final - fecha_inicial
 		segundos_transcurridos = diferencia.total_seconds()
 		datetime.strptime("25/01/2015 15:05", "%d/%m/%Y %H:%M")
@@ -105,21 +107,23 @@ class medio(tarjeta):
 				if(self.saldo < 0.96):
 					return False
 				else:
-					self.saldo=self.saldo-0.96
+					self.saldo=round(self.saldo-0.96,2)
 					self.uhorario=fecha_final
 					self.ucolectivo=colectivo.linea
+					self.uinterno=colectivo.interno
 					#self.viajenuevo()
 					self.aux = viaje(colectivo,fecha_final,0.96,self.saldo)
 					self.list_viajes.append(self.aux)
 					return True
 			else:
-				if(self.ulinea!=colectivo.linea and segundos_transcurridos < 3600):
+				if(self.uinterno!=colectivo.interno and segundos_transcurridos < 3600):
 					if(self.saldo < 0.96):
 						return False
 					else:
-						self.saldo=self.saldo-0.96
+						self.saldo=round(self.saldo-0.96,2)
 						self.uhorario=fecha_final
 						self.ucolectivo=colectivo.linea
+						self.uinterno=colectivo.interno
 						#self.viajenuevo()
 						self.aux = viaje(colectivo,fecha_final,0.96,self.saldo)
 						self.list_viajes.append(self.aux)
@@ -128,27 +132,12 @@ class medio(tarjeta):
 					if(self.saldo < 2.90):
 						return False
 					else:
-						self.saldo=self.saldo-2.90
+						self.saldo=round(self.saldo-2.9,2)
 						self.uhorario=fecha_final
 						self.ucolectivo=colectivo.linea
+						self.uinterno=colectivo.interno
 						#self.viajenuevo()
-						self.aux = viaje(colectivo,fecha_final,2.9,self.saldo)
+						self.aux = viaje(colectivo,fecha_final,2.90,self.saldo)
 						self.list_viajes.append(self.aux)
 						return True
-		else: self.pagar(colectivo)
-	
-k=colectivo("semtur","k",1)
-centro=colectivo("Rosario Bus",144,1)
-centros=colectivo("Rosario Bus",144,2)
-seba=comun(0,1,0,datetime.strptime("25/01/2015 15:05", "%d/%m/%Y %H:%M")
-,0)
-rolo=medio(0,144,0,datetime.strptime("25/01/2015 15:05", "%d/%m/%Y %H:%M")
-,0)
-rolo.recarga(10)
-seba.recarga(196)
-rolo.pagarboleto(centro)
-seba.pagarboleto(k)
-rolo.pagarboleto(centros)
-rolo.mostrarviajes()
-seba.mostrarviajes()
-print (seba.mostrarsaldo())
+		else: self.pagar(colectivo,horario)
